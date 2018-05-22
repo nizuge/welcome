@@ -1,0 +1,12 @@
+config:
+  test: helloWorld!
+server:
+  port: 8888
+sdk:
+  host_ip: 192.168.10.132
+  port: 8000
+  token: GxSW-JKSD
+  version: v0
+data:
+  threshold: 5
+  thread: 5
