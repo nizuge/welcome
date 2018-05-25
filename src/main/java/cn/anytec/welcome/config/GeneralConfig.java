@@ -17,6 +17,10 @@ public class GeneralConfig {
     private String token;
     @Value("${sdk.version}")
     private String sdk_version;
+    //SDK_API
+    @Value("${sdk.api.identify.threshold}")
+    private double sdk_api_identify_threshold;
+
     //data control
     @Value("${data.threshold}")
     private int data_threshold;
@@ -49,5 +53,9 @@ public class GeneralConfig {
 
     public int getData_thread() {
         return data_thread;
+    }
+
+    public double getSdk_api_identify_threshold() {
+        return sdk_api_identify_threshold;
     }
 }

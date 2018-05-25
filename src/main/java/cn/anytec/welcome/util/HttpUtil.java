@@ -20,9 +20,9 @@ public class HttpUtil {
 			URL url = new URL(httpURL);
 			logger.debug("URL :" + url);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setConnectTimeout(10000);
-			connection.setReadTimeout(50000);
-			connection.setDoOutput(true);
+			connection.setConnectTimeout(3000);
+			connection.setReadTimeout(3000);
+			connection.setDoOutput(false);
 			connection.setDoInput(true);
 			connection.setUseCaches(false);
 			connection.setRequestMethod("GET");
@@ -33,6 +33,8 @@ public class HttpUtil {
 				return null;
 			}
 			byte[] binany = streamToByte(connection.getInputStream());
+			if(binany == null)
+				return null;
 			logger.debug("binary_length:" + binany.length);
 			connection.disconnect();
 			return binany;
@@ -43,6 +45,8 @@ public class HttpUtil {
     }
 
 	public static byte[] streamToByte(InputStream is) {
+    	if(is == null)
+    		return null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int c = 0;
 		byte[] buffer = new byte[8 * 1024];

@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 public class ImageUtil {
 
-    private static BufferedImage cutImg(byte[] pic, String format,int x, int y, int width, int height) {
+    public static byte[] cutImg(byte[] pic, String format,int x, int y, int width, int height) {
 
         ByteArrayInputStream in = null;
         BufferedImage imageHandle = null;
@@ -37,6 +37,7 @@ public class ImageUtil {
             Rectangle rect = new Rectangle(x, y, width, height);
             param.setSourceRegion(rect);
             imageHandle = reader.read(0, param);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -49,8 +50,9 @@ public class ImageUtil {
                     e.printStackTrace();
                 }
         }
-        return imageHandle;
+        return bufferedImageToBytes(imageHandle,format);
     }
+
 
     public static byte[] bufferedImageToBytes(BufferedImage bImage, String format) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -67,4 +69,6 @@ public class ImageUtil {
         }
         return out.toByteArray();
     }
+
+
 }

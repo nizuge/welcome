@@ -7,6 +7,10 @@ sdk:
   port: 8000
   token: GxSW-JKSD
   version: v0
+  api:
+    identify:
+      threshold: 0.7
 data:
   threshold: 5
-  thread: 5
+  thread: 1
+

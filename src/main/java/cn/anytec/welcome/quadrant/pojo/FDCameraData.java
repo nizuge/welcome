@@ -15,7 +15,6 @@ public class FDCameraData {
         for (int i = 0; i < MAX_FACE_ITEM_PER_FRAME; i++) {
             mFaceItem[i] = new FaceDefine();
         }
-
     }
 
     @Override

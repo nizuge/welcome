@@ -43,10 +43,7 @@ public class CameraChannelHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		String camIp = getCameraIp(ctx);
-/*		if(CameraViewManager.getCameraLiveViewer(camIp)!=null)
-			CameraViewManager.getCameraLiveViewer(camIp).setOnline(false);*/
 		logger.debug("Camera:{} offline",camIp);
-		//FDCameraDataHandler.setCameraSessionOffline(clientIp);
 	}
 
 	@Override
@@ -57,38 +54,7 @@ public class CameraChannelHandler extends ChannelInboundHandlerAdapter {
 			FDCameraData fdCameraData = (FDCameraData)msg;
 			fdCameraDataHandler.OnCameraData(fdCameraData);
 			String base64Pic = Base64.getEncoder().encodeToString(fdCameraData.mJpgData);
-			simpMessagingTemplate.convertAndSend("/topic/"+fdCameraData.mStrMac,"{\"pic\":\""+base64Pic+"\"}");
-			//logger.info("cameraIp :{}",camIp);
-			//logger.info("cameraMac :{}",camMac);
-			//CameraViewCount cameraViewCount = CameraViewCount.getCameraViewCount(camMac);
-			/*if(data.mFaceNum > 0){
-				if(cameraViewCount.times+1 == Constant.STRATEGY_CAMERA_SCALE){
-					cameraViewCount.times = 0;
-					FindFaceHandler.getInstance().notifyFindFace(data);
-				}else {
-					cameraViewCount.count();
-				}
-			}*/
-			//logger.info("Mac:"+camMac);
-			/*if(!CameraViewManager.isKnownCamera(camIp)){
-				String oldIp = CameraViewManager.isoldMac(camMac);
-				if(oldIp!=null){
-					CameraViewManager.removeCameraLiveViewer(oldIp);
-				}else {
-					DataPushScheduler.createCondition(camMac);
-					DataPushRunable dataPushRunable = new DataPushRunable(camMac);
-					CameraDataBootstrap.setPushRunable(camMac,dataPushRunable);
-					Thread thread = new Thread(dataPushRunable);
-					thread.setDaemon(true);
-					thread.start();
-				}
-				CameraViewManager.setCameraLiveViewer(camIp,new CameraLiveViewer(camMac,true));
-			}
-			CameraViewManager.getCameraLiveViewer(camIp).setOnline(true);
-
-			if(WsMessStore.getWssIds(camMac) == null)
-				return;
-			WsMessStore.getInstance().addMessage(data);*/
+			simpMessagingTemplate.convertAndSend("/topic/"+fdCameraData.mStrMac,"{\"scene\":\""+base64Pic+"\"}");
 
 		}
 	}

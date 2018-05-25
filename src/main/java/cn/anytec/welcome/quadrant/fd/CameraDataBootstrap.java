@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 public class CameraDataBootstrap {
 
     private static Logger logger = LoggerFactory.getLogger(CameraDataBootstrap.class);
-   // private static Map<String,DataPushRunable> pushRunableMap;
 
     private int port = 8100;
     private static final int CHANNEL_IDLE_TIMEOUT_SECOND = 120;
@@ -34,11 +33,8 @@ public class CameraDataBootstrap {
 
     public void init() {
 
-        //pushRunableMap = new HashMap();
-
         logger.debug("初始化CameraDataBootstrap,建立Channel");
-       // logger.debug("启动推送线程");
-     //   WsMessStore.getInstance().startPushMessThread();
+
 
         group = new NioEventLoopGroup();
         try {
@@ -79,10 +75,4 @@ public class CameraDataBootstrap {
         }
     }
 
-  /*  public static void setPushRunable(String camMac,DataPushRunable dataPushRunable){
-        pushRunableMap.put(camMac,dataPushRunable);
-    }
-    public static DataPushRunable getDataPushRunable(String camMac){
-        return pushRunableMap.get(camMac);
-    }*/
 }
