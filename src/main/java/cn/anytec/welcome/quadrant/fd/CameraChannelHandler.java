@@ -2,6 +2,7 @@ package cn.anytec.welcome.quadrant.fd;
 
 import cn.anytec.welcome.config.GeneralConfig;
 import cn.anytec.welcome.quadrant.pojo.FDCameraData;
+import cn.anytec.welcome.quadrant.pojo.FaceDefine;
 import cn.anytec.welcome.util.ImageUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -57,8 +58,7 @@ public class CameraChannelHandler extends ChannelInboundHandlerAdapter {
 			/*String camIp = getCameraIp(ctx);*/
 			FDCameraData fdCameraData = (FDCameraData)msg;
 			fdCameraDataHandler.OnCameraData(fdCameraData);
-			byte[] view;
-
+			byte[] view = fdCameraData.mJpgData;
 			Integer count = drawBoxThreadLocal.get();
 			if(count == null) {
 				count = 1;
@@ -67,12 +67,19 @@ public class CameraChannelHandler extends ChannelInboundHandlerAdapter {
 			}
 			if(count == config.getData_draw()) {
 				count = 0;
-				view = ImageUtil.drawFaceBox(fdCameraData);
-			}else {
-				view = fdCameraData.mJpgData;
+				for(int i=0;i<fdCameraData.mFaceNum;i++){
+					FaceDefine faceDefine = fdCameraData.mFaceItem[i];
+					if(faceDefine!=null){
+						int x= (int) (faceDefine.left);
+						int y= (int) (faceDefine.top);
+						int width = (int) ((faceDefine.right-faceDefine.left));
+						int height= (int) ((faceDefine.bottom-faceDefine.top));
+						view = ImageUtil.drawFaceBox(fdCameraData.mJpgData,x,y,width,height);
+						fdCameraData.mJpgData = view;
+					}
+				}
 			}
 			drawBoxThreadLocal.set(count);
-
 			String base64Pic = Base64.getEncoder().encodeToString(view);
 			simpMessagingTemplate.convertAndSend("/topic/"+fdCameraData.mStrMac,"{\"scene\":\""+base64Pic+"\"}");
 
