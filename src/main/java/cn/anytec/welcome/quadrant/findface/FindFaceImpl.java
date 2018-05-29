@@ -45,10 +45,10 @@ public class FindFaceImpl implements FindFaceService{
             int responseCode = response.getStatusLine().getStatusCode();
             if(responseCode == 200){
                 return gson.fromJson(reply,DetectPojo.class);
-            }else {
+            }/*else {
                 logger.warn("请求未正确响应：" + responseCode);
                 logger.warn(reply);
-            }
+            }*/
         } catch (IOException e) {
             e.printStackTrace();
         }

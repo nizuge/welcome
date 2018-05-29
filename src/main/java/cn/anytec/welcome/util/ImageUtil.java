@@ -1,9 +1,13 @@
 package cn.anytec.welcome.util;
 
+import cn.anytec.welcome.quadrant.pojo.FDCameraData;
+import cn.anytec.welcome.quadrant.pojo.FaceDefine;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -68,6 +72,52 @@ public class ImageUtil {
             }
         }
         return out.toByteArray();
+    }
+
+    public static byte[] drawFaceBox(FDCameraData data){
+        Image image = Toolkit.getDefaultToolkit().createImage(data.mJpgData);
+        // This code ensures that all the pixels in the image are loaded
+        image = new ImageIcon(image).getImage();
+        BufferedImage bimage = null;
+        // Create a buffered image using the default color model
+        int type = BufferedImage.TYPE_INT_RGB;
+        bimage = new BufferedImage(image.getWidth(null),
+                image.getHeight(null), type);
+        // Copy image to buffered image
+        Graphics g = bimage.getGraphics();
+        Graphics2D g2d=(Graphics2D)g;
+        // Paint the image onto the buffered image
+        g2d.drawImage(image, 0, 0, null);
+        Stroke stroke=new BasicStroke(10.0f);//设置线宽
+        g2d.setStroke(stroke);
+        g2d.setColor(Color.green);//画笔颜色
+        for(int i=0;i<data.mFaceNum;i++){
+            FaceDefine faceDefine = data.mFaceItem[i];
+            if(faceDefine!=null){
+                int x= (int) (faceDefine.left);
+                int y= (int) (faceDefine.top);
+                int width = (int) ((faceDefine.right-faceDefine.left));
+                int height= (int) ((faceDefine.bottom-faceDefine.top));
+                g2d.drawRect(x, y, width, height);
+            }
+
+        }
+
+        g2d.dispose();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+
+            ImageIO.write(bimage,"jpeg", baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return baos.toByteArray();
     }
 
 

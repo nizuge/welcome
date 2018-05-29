@@ -11,6 +11,7 @@ sdk:
     identify:
       threshold: 0.7
 data:
-  threshold: 5
+  threshold: 12
+  draw: 6
   thread: 1
 

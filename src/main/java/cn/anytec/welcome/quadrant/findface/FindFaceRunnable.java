@@ -47,7 +47,10 @@ public class FindFaceRunnable implements Runnable{
             IdentifyPojo identifyPojo = findFaceService.imageIdentify(data.mJpgData,null);
             if(identifyPojo == null)
                 return;
+            if(data.mFaceItem[0].left != 0)
+                logger.info(data.mFaceItem[0].left+"-"+data.mFaceItem[0].top);
             identifyPojo.getResults().keySet().forEach((key)->{
+                logger.info(key);
                 try {
                     List<IdentifyPojo.MatchFace> matchFaces = identifyPojo.getResults().get(key);
                     Map<String,Object> replyInfo = new HashMap<>();
@@ -55,7 +58,7 @@ public class FindFaceRunnable implements Runnable{
                         IdentifyPojo.MatchFace matchFace= matchFaces.get(0);
                         if(matchFace.getConfidence() > config.getSdk_api_identify_threshold()){
                             byte[] identified = HttpUtil.getBinaryDataByURL(matchFace.getFace().getPhoto());
-                            replyInfo.put("identified",Base64.getEncoder().encodeToString(identified));
+                            replyInfo.put("photo",Base64.getEncoder().encodeToString(identified));
                             replyInfo.put("meta",matchFace.getFace().getMeta());
                             simpMessagingTemplate.convertAndSend("/topic/"+data.mStrMac,new JSONObject(replyInfo).toJSONString());
                         }
@@ -68,7 +71,8 @@ public class FindFaceRunnable implements Runnable{
                         x1 = x1 < 0 ? 0 : x1;
                         y1 = y1 < 0 ? 0 : y1;
                         byte[] unrecognized = ImageUtil.cutImg(data.mJpgData,"jpeg",x1,y1,x2-x1,y2-y1);
-                        replyInfo.put("unrecognized",Base64.getEncoder().encodeToString(unrecognized));
+                        replyInfo.put("meta","未识别");
+                        replyInfo.put("photo",Base64.getEncoder().encodeToString(unrecognized));
                         simpMessagingTemplate.convertAndSend("/topic/"+data.mStrMac,new JSONObject(replyInfo).toJSONString());
                     }
 
@@ -89,7 +93,7 @@ public class FindFaceRunnable implements Runnable{
     }
     public void setData(FDCameraData data){
         if(dataArrayDeque.size() > 1){
-            dataArrayDeque.pollLast();
+            dataArrayDeque.removeLast();
         }
         data.timestamp = System.currentTimeMillis();
         System.out.println("set:"+data.timestamp);

@@ -1,9 +1,4 @@
 package cn.anytec.welcome.quadrant.fd;
-/**
- * 继承ReplayingDecoder（extends FrameDecoder）--编解码器
- * 判断数据是否接受完全
- * 实现近乎无阻塞读取而仅是数据
- */
 
 import cn.anytec.welcome.quadrant.pojo.FDCameraData;
 import io.netty.buffer.ByteBuf;
@@ -23,7 +18,6 @@ public class CameraByteToMessageDecoder extends ReplayingDecoder<Void> {
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 
 		FDCameraData fdData = new FDCameraData();
-
 		byte[] magicStr = new byte[4];
 		byte[] totalLen = new byte[4];
 		byte[] mac = new byte[18];
@@ -53,38 +47,17 @@ public class CameraByteToMessageDecoder extends ReplayingDecoder<Void> {
 
 		for (int i = 0; i < FDCameraData.MAX_FACE_ITEM_PER_FRAME; i++) {
 			in.readBytes(data);
-			//int confidence = byte2int(data);
-
+			fdData.mFaceItem[i].confidence = byte2int(data);
 			in.readBytes(data);
-			//int ID = byte2int(data);
-
+			fdData.mFaceItem[i].ID = byte2int(data);
 			in.readBytes(data);
-			//double left = byte2int(data) / 640 * Constant.WIDTH;
-
+			fdData.mFaceItem[i].left = byte2int(data) / 640.0 * 1280 * 1.45;
 			in.readBytes(data);
-			//double right = byte2int(data) / 640 * Constant.WIDTH;
-
+			fdData.mFaceItem[i].right = byte2int(data) / 640.0 * 1280 * 1.45;
 			in.readBytes(data);
-			//double top = byte2int(data) / 360 * Constant.HEIGHT;
-
+			fdData.mFaceItem[i].top = byte2int(data) / 360.0 * 720 * 1.45;
 			in.readBytes(data);
-			//double bottom = byte2int(data) / 360 * Constant.HEIGHT;
-
-			/*fdData.mFaceItem[i].left = left;
-			fdData.mFaceItem[i].right = right;
-			fdData.mFaceItem[i].top = top;
-			fdData.mFaceItem[i].bottom = bottom;
-			fdData.mFaceItem[i].confidence = confidence;
-			fdData.mFaceItem[i].ID = ID;*/
-
-				/*FaceDefine faceDefine = new FaceDefine();
-				faceDefine.confidence = confidence;
-				faceDefine.ID = ID;
-				faceDefine.left = left;
-				faceDefine.right = right;
-				faceDefine.top = top;
-				faceDefine.bottom = bottom;
-				fdData.mFaceItem.add(faceDefine);*/
+			fdData.mFaceItem[i].bottom = byte2int(data) / 360.0 * 720 * 1.45;
 
 		}
 		in.readBytes(dummy);

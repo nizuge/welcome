@@ -1,6 +1,8 @@
 package cn.anytec.welcome.quadrant.fd;
 
+import cn.anytec.welcome.config.GeneralConfig;
 import cn.anytec.welcome.quadrant.pojo.FDCameraData;
+import cn.anytec.welcome.util.ImageUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -28,12 +30,15 @@ import java.util.Base64;
 public class CameraChannelHandler extends ChannelInboundHandlerAdapter {
 	private static final ByteBuf HEARTBEAT_SEQUENCE = 	Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("1", CharsetUtil.ISO_8859_1));
 	private static final Logger logger = LoggerFactory.getLogger(CameraChannelHandler.class);
+	private static ThreadLocal<Integer> drawBoxThreadLocal = new ThreadLocal<>();
 
 
 	@Autowired
-	FDCameraDataHandler fdCameraDataHandler;
+	private FDCameraDataHandler fdCameraDataHandler;
 	@Autowired
-	SimpMessagingTemplate simpMessagingTemplate;
+	private SimpMessagingTemplate simpMessagingTemplate;
+	@Autowired
+	private GeneralConfig config;
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -49,11 +54,26 @@ public class CameraChannelHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if(msg != null && msg instanceof FDCameraData) {
-			String camIp = getCameraIp(ctx);
-
+			/*String camIp = getCameraIp(ctx);*/
 			FDCameraData fdCameraData = (FDCameraData)msg;
 			fdCameraDataHandler.OnCameraData(fdCameraData);
-			String base64Pic = Base64.getEncoder().encodeToString(fdCameraData.mJpgData);
+			byte[] view;
+
+			Integer count = drawBoxThreadLocal.get();
+			if(count == null) {
+				count = 1;
+			}else {
+				count++;
+			}
+			if(count == config.getData_draw()) {
+				count = 0;
+				view = ImageUtil.drawFaceBox(fdCameraData);
+			}else {
+				view = fdCameraData.mJpgData;
+			}
+			drawBoxThreadLocal.set(count);
+
+			String base64Pic = Base64.getEncoder().encodeToString(view);
 			simpMessagingTemplate.convertAndSend("/topic/"+fdCameraData.mStrMac,"{\"scene\":\""+base64Pic+"\"}");
 
 		}

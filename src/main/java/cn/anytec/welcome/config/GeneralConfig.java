@@ -26,6 +26,8 @@ public class GeneralConfig {
     private int data_threshold;
     @Value("${data.thread}")
     private int data_thread;
+    @Value("${data.draw}")
+    private int data_draw;
 
     public String getTest() {
         return test;
@@ -57,5 +59,9 @@ public class GeneralConfig {
 
     public double getSdk_api_identify_threshold() {
         return sdk_api_identify_threshold;
+    }
+
+    public int getData_draw() {
+        return data_draw;
     }
 }
